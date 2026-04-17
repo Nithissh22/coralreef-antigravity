@@ -1,0 +1,76 @@
+# ============================================================
+#  Coral Reef Health Classification — Default Configuration
+# ============================================================
+
+# ---------- Paths ----------
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  models: "models"
+  runs: "runs"
+
+# ---------- Dataset ----------
+dataset:
+  classes: ["healthy", "bleached", "diseased"]
+  num_classes: 3
+  image_size: 224
+  split_ratios:            # train / val / test
+    train: 0.7
+    val: 0.15
+    test: 0.15
+  random_seed: 42
+
+# ---------- Preprocessing ----------
+preprocessing:
+  color_correction: true   # Gray-World white balance
+  denoise: true            # Non-local means denoising
+  clahe: true              # CLAHE on L-channel (LAB)
+  clahe_clip_limit: 2.0
+  clahe_tile_grid_size: [8, 8]
+
+# ---------- Augmentation ----------
+augmentation:
+  enabled: true
+  horizontal_flip: true
+  vertical_flip: false
+  random_rotation: 15      # degrees
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.05
+
+# ---------- Deep Learning ----------
+training:
+  model: "resnet50"        # resnet50 | efficientnet_b0 | vit_b_16
+  pretrained: true
+  freeze_backbone: true
+  unfreeze_after_epoch: 5
+  batch_size: 32
+  epochs: 30
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler: "cosine"      # cosine | step
+  early_stopping_patience: 7
+  device: "auto"           # auto | cpu | cuda
+
+# ---------- Traditional ML ----------
+traditional_ml:
+  models: ["svm", "random_forest", "xgboost"]
+  features: ["color_histogram", "haralick", "hog"]
+  svm:
+    kernel: "rbf"
+    C: 10.0
+  random_forest:
+    n_estimators: 300
+    max_depth: null
+  xgboost:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.1
+
+# ---------- Explainability ----------
+explainability:
+  method: "gradcam"        # gradcam | gradcam++ | scorecam
+  target_layer: null       # null = auto-detect last conv layer
+  output_dir: "runs/gradcam"
